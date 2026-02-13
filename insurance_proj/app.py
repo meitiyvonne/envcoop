@@ -54,6 +54,21 @@ if prompt := st.chat_input("Votre message..."):
     with st.chat_message("user"):
         st.markdown(prompt)
 
+# Traitement du fichier téléchargé : afficher colonnes et aperçu
+if uploaded_file:
+    try:
+        df = pd.read_csv(uploaded_file)
+        st.success(f"Fichier '{uploaded_file.name}' chargé avec succès.")
+        st.write("Colonnes du fichier :", df.columns.tolist())
+        st.dataframe(df.head())
+
+        # Permettre à l'utilisateur de sélectionner la colonne souhaitée
+        selected_col = st.selectbox("Sélectionnez la colonne à utiliser", df.columns.tolist())
+        st.session_state['uploaded_df'] = df
+        st.session_state['selected_col'] = selected_col
+    except Exception as e:
+        st.error(f"Erreur : {e}")
+
     try:
         # Utiliser `gemini-flash-latest` pour un quota plus élevé
         response = client.models.generate_content(
